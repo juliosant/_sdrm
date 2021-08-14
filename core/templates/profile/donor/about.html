@@ -1,0 +1,24 @@
+{% extends 'profile/donor/base/base_logged.html' %}
+
+{% block title %}.:Página de usuário{% endblock %}
+
+{% block content %}
+<style>
+
+</style>
+<div class="col-md-9 pe-5">
+    <h1 class="text-end">Sobre mim</h1>
+    <hr>
+    <h3>Nome</h3>
+    <p>{{ request.user.donnor.first_name}} {{ request.user.donnor.last_name}}</p>
+    
+    <h3>CPF</h3>
+    <p>{{ request.user.donnor.cpf }}</p>
+
+    <h3>Telefone</h3>
+    <p>{{ request.user.phone }}</p>
+    
+    
+</div>
+</div>
+{% endblock %}
