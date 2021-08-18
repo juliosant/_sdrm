@@ -2,10 +2,12 @@ from core.models import Profile
 from django.shortcuts import redirect, render
 from ..forms import LoginForm, RegisterDonorForm
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib import messages
 
 # Create your views here.
+def user_type(login_url=None):
+    return user_passes_test(lambda u: u.profile_type == 'D', login_url=login_url)
 
 def register_donor(request):
     if request.POST:
@@ -56,10 +58,12 @@ def logout_donor(request):
 
 
 @login_required(login_url='login_donor')
+@user_type(login_url="login_donor")
 def userpage(request):
     return render(request, 'profile/donor/home.html')
 
 
 @login_required(login_url='login_donor')
+@user_type(login_url="login_donor")
 def about_donor(request):
     return render(request, 'profile/donor/about.html')

@@ -1,10 +1,17 @@
 from django.contrib.auth import login, logout, authenticate
-from core.models import Profile
+from django.db.models.query_utils import Q
+from django.forms.models import inlineformset_factory
+from core.models import Donation, Profile, RecyclabelMaterial
 from django.http.response import HttpResponse
-from core.forms import LoginForm, RegisterPlaceForm, RegisterRecyclingForm
+from core.forms import LoginForm, RegisterDonationForm, RegisterMaterialForm, RegisterPlaceForm, RegisterRecyclingForm, SearchDonorForm
 from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+
+
+def user_type(login_url=None):
+    return user_passes_test(lambda u: u.profile_type == 'P', login_url=login_url)
+
 
 def register_recyclingCenter(request):
     if request.POST:
@@ -65,10 +72,67 @@ def logout_recyclingCenter(request):
 
 
 @login_required(login_url='login_recyclingcenter')
+@user_type(login_url="login_recyclingcenter")
 def userpage(request):
     return render(request, 'profile/recyclingCenter/home.html')
 
 
+@login_required(login_url='login_recyclingcenter')
+@user_type(login_url="login_recyclingcenter")
+def search_donor(request):
+
+    content_search = None
+    
+    if request.POST:
+        if len(request.POST['search']) >= 3:
+            try:
+                search_id = request.POST['search']
+            except ValueError:
+                pass
+
+            search = Q(
+                Q(
+                    Q(id__contains=search_id) | 
+                    Q(first_name__contains=request.POST['search']) | 
+                    Q(last_name__contains=request.POST['search'])) & 
+                Q(profile_type__exact='D'))
+
+            content_search = Profile.objects.filter(search)
+        else:
+            messages.info(request, 'Digite no mínimo 3 caracteres')
+    
+    search_donor_form = SearchDonorForm()
+    content = {
+        'search_donor_form': search_donor_form,
+        'content_search': content_search
+    }
+    return render(request, 'profile/recyclingCenter/search_donor.html', content)
 
 
+@login_required(login_url='login_recyclingcenter')
+@user_type(login_url="login_recyclingcenter")
+def register_donation(request):
 
+    if request.POST:
+
+        post = request.POST.copy()
+        post['recyclingCenter_id'] = request.user
+        request.POST = post
+
+        material_form_factory = inlineformset_factory(Donation, RecyclabelMaterial, form=RegisterMaterialForm)
+        register_material_form = material_form_factory(request.POST)
+
+        register_donation_form = RegisterDonationForm(request.POST)
+        
+        if register_donation_form.is_valid() and register_material_form.is_valid():
+            donation = register_donation_form()
+
+    register_donation_form = RegisterDonationForm()
+    
+    material_form_factory = inlineformset_factory(Donation, RecyclabelMaterial, form=RegisterMaterialForm, extra=1)
+    register_material_form = material_form_factory()
+    content = {
+        'donation_form': register_donation_form,
+        'material_form': register_material_form
+    }
+    return render(request, 'profile/recyclingCenter/donate.html', content)

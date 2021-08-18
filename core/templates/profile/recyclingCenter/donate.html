@@ -1,0 +1,155 @@
+{% extends 'profile/recyclingCenter/base/base_logged.html' %}
+
+{% load bootstrap %}
+{% load filters %}
+
+{% block title %}.:Página de usuário{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10  ps-5 pe-5">
+    <h1 class="text-end">Registrar Doação</h1>
+    <!--hr>
+    <form method="POST">
+        <div class="card mx-auto w-75">
+            <div class="card-body">
+                {{ donation_form.description|f_class:'form-control border'}}
+
+                <div class="mt-5"></div>
+
+                {{ material_form.management_form }}
+                {% for form in material_form %}
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label>Material</label>
+                        {{form.material_name|f_class:'form-control'}}
+                    </div>
+                    <div class="col-md-2">
+                        <label>Qutde (Kg)</label>
+                        {{form.quatity|f_class:'form-control'}}
+                    </div>
+                    <div class="col-md-1 mx-auto">
+                        <p>XXpts</p>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="button" class="btn btn-danger" value="Remover">
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <input type="button" onclick="add_for();" class="btn btn-outline-success w-50 mx-auto" value="Novo Material">
+                </div>
+            </div>
+        </div>
+    </form-->
+    <form method="POST">
+        <div class="card mx-auto w-75">
+            <div class="card-body">
+                {{ donation_form.description|f_class:'form-control border'}}
+            </div>
+                <div class="mt-5"></div>
+            {{ material_form.management_form }}
+            {% for form in material_form %}
+            <div id="form_add" class="p-3">
+                <div id="row_form-0" class="row">
+                    <div id="col-md-6_form-0" class="col-md-6">
+                        <label for="">Material</label>
+                        {{form.material_name|f_class:'form-control'}}
+                    </div>
+
+                    <div id="col-md-2_form-0" class="col-md-2">
+                        <label for="">Qtde</label>
+                        {{form.quatity|f_class:'form-control'}}
+                    </div>
+                    <div id="col-md-3_form-0" class="mt-4 col-md-3">
+                        <input type="button" id="remove-button" class="btn btn-danger" value="Remover">
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+    <div class="card-body">
+        <div class="row">
+            <button type="button" class="btn btn-outline-success w-50 mx-auto" onclick="add_tags();">Adicionar
+                novo</button>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block scripts%}
+<script>
+    function add_form() {
+        var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
+        var new_form_value = parseInt(total_forms.value) - 1;
+
+        // new fields for material
+        var new_label_material_name = document.createElement('Material');
+        new_label_material_name.innerHTML = 'Material';
+        var new_input_material_name = document.querySelector('#id_recyclabelmaterial_set-0-material_name').cloneNode(true);
+        new_input_material_name.name = 'recyclabelmaterial_set' + total_forms.value + '-material_name';
+        new_input_material_name.id = 'id_recyclabelmaterial_set' + total_forms + '-material_name';
+
+        var new_label_quantity = document.createElement('Qtde');
+        new_label_quantity.innerHTML = 'Qtde';
+        var new_input_quantity = document.querySelector('#id_recyclabelmaterial_set-0-quatity').cloneNode(true);
+        new_input_quantity.name = 'recyclabelmaterial_set' + total_forms.value + '-quatity';
+        new_input_quantity.id = 'id_recyclabelmaterial_set' + total_forms + '-quatity';
+
+        var new_label_remove = document.createElement('INPUT');
+        new_label_remove.innerHTML = 'Remover';
+        new_label_remove.className = 'btn btn-danger';
+        new_label_remove.type = 'button';
+        new_label_remove.value = 'Remover';
+        new_label_remove.id = 'remove-button';
+
+        document.querySelector('#col-md-6_form-' + new_form_value).appendChild(new_label_material_name);
+        document.querySelector('#col-md-6_form-' + new_form_value).appendChild(new_input_material_name);
+
+        document.querySelector('#col-md-2_form-' + new_form_value).appendChild(new_label_quantity);
+        document.querySelector('#col-md-2_form-' + new_form_value).appendChild(new_input_quantity);
+
+        document.querySelector('#col-md-3_form-' + new_form_value).appendChild(new_label_remove);
+        //document.querySelector('#form_add').appendChild(new_input_remove);
+
+        total_forms.value = parseInt(total_forms.value) + 1;
+
+    }
+
+    function add_tags() {
+        var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
+
+        div_row = document.createElement("DIV");
+        div_row.className = 'row';
+        div_row.id = 'row_form-' + total_forms.value;
+        document.querySelector('#form_add').appendChild(div_row);
+
+        div_col_6 = document.createElement("DIV");
+        div_col_6.className = 'col-md-6';
+        div_col_6.id = 'col-md-6_form-' + total_forms.value;
+        document.querySelector('#' + div_row.id).appendChild(div_col_6)
+
+        div_col_2 = document.createElement("DIV");
+        div_col_2.className = 'col-md-2';
+        div_col_2.id = 'col-md-2_form-' + total_forms.value;
+        document.querySelector('#' + div_row.id).appendChild(div_col_2);
+
+        div_col_3 = document.createElement("DIV");
+        div_col_3.className = 'mt-4 col-md-3';
+        div_col_3.id = 'col-md-3_form-' + total_forms.value;
+        document.querySelector('#' + div_row.id).appendChild(div_col_3);
+
+        total_forms.value = parseInt(total_forms.value) + 1;
+
+        this.add_form();
+    }
+
+</script>
+{% endblock %}

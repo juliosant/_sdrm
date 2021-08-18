@@ -38,4 +38,19 @@ class RecyclingCenter(Profile):
     place = models.OneToOneField(Place, on_delete=CASCADE, null=True, blank=True)
 
 
+class Donation(models.Model):
+    donor_id = models.ForeignKey(Donnor, on_delete=CASCADE)
+    recyclingCenter_id = models.ForeignKey(RecyclingCenter, on_delete=CASCADE)
+    description = models.TextField(max_length=300, null=True, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(null=True, blank=True)
+    confirmed = models.BooleanField()
+    added_points = models.PositiveIntegerField(default=0)
+
+
+class RecyclabelMaterial(models.Model):
+    donation_id = models.ForeignKey(Donation, on_delete=CASCADE)
+    material_name = models.CharField(max_length=100)
+    quatity = models.PositiveIntegerField()
+    
 

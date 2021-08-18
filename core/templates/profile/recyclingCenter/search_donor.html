@@ -1,0 +1,54 @@
+{% extends 'profile/recyclingCenter/base/base_logged.html' %}
+
+{% load bootstrap %}
+{% load filters %}
+
+{% block title %}.:Página de usuário{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10  ps-5 pe-5">
+    
+    <h1 class="text-end">Buscar Doador</h1>
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="card w-75 mx-auto">
+            <div class="card-body row">
+                <div class="col-md-9">
+                    {{ search_donor_form.search|f_class:'form-control' }}
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success mx-auto" style="width: 10rem;"> Buscar</button>
+                </div>
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <br>
+        <br>
+        {% if content_search is not None %}
+        <div class="card w-75 mx-auto mt-5">
+            <div class="card-body row">
+                <div class="col-md-9">
+                    {% for donor in content_search %}
+                        {{ donor.first_name}}
+                    {% endfor %}
+                    <a href=""{}></a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </form>
+</div>
+
+</div>
+{% endblock %}

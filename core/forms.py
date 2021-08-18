@@ -1,5 +1,6 @@
 from django import forms
-from .models import Donnor, Place, Profile, RecyclingCenter
+from django.forms import widgets
+from .models import Donation, Donnor, Place, Profile, RecyclabelMaterial, RecyclingCenter
 from django.contrib.auth.forms import UserCreationForm
 
 class LoginForm(forms.Form):
@@ -35,3 +36,23 @@ class RegisterPlaceForm(forms.ModelForm):
     class Meta:
         model = Place
         fields = '__all__'
+
+
+class RegisterDonationForm(forms.ModelForm):
+    class Meta:
+        model = Donation
+        fields = '__all__'
+
+
+class RegisterMaterialForm(forms.ModelForm):
+    class Meta:
+        model = RecyclabelMaterial
+        fields = '__all__'
+        #widgets = {
+        #    'material_name': forms.TextInput(attrs={'id': 'material_name'}),
+        #    'quatity': forms.TextInput(attrs={'id': 'quantity'})
+        #}
+
+
+class SearchDonorForm(forms.Form):
+    search = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Adicione ID do doador'}))
