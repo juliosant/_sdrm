@@ -15,6 +15,6 @@ urlpatterns = [
     path('recyclingcenter/logout/', views_recyclingcenter.logout_recyclingCenter, name="logout_recyclingCenter"),
     
     path('recyclingcenter/search/', views_recyclingcenter.search_donor, name="search_donor"),
-    path('recyclingcenter/donation/', views_recyclingcenter.register_donation, name="register_donation"),
+    path('recyclingcenter/donation/<id>/', views_recyclingcenter.register_donation, name="register_donation"),
         
 ]

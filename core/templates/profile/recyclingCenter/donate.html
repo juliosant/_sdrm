@@ -9,74 +9,66 @@
 
 <div class="col-md-10  ps-5 pe-5">
     <h1 class="text-end">Registrar Doação</h1>
-    <!--hr>
+    <hr>
     <form method="POST">
+        {% csrf_token %}
         <div class="card mx-auto w-75">
-            <div class="card-body">
+            <div class="card-body row border m-3">
+                <h1 class="mb-4">Dados do doador</h1>
+                <div class="col-md-6">
+                    <label class="h5">Doador:</label>
+                    {{donor.first_name}} {{donor.last_name}}
+                </div>
+                <div class="col-md-6">
+                    <label class="h5">Email:</label>
+                    {{ donor.email}}
+                </div>
+                <div class="col-md-6">
+                    <label class="h5">Telefone</label>
+                    {{donor.phone}}
+                </div>
+            </div>
+
+            <div class="card-body border m-3">
+                <h1>Formulário de Doação</h1>
                 {{ donation_form.description|f_class:'form-control border'}}
-
-                <div class="mt-5"></div>
-
+                <br><br>
                 {{ material_form.management_form }}
                 {% for form in material_form %}
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label>Material</label>
-                        {{form.material_name|f_class:'form-control'}}
+                <div id="form_add">
+                    <div id="row_form-0" class="row">
+                        <div id="col-md-6_form-0" class="col-md-6">
+                            <label for="">Material</label>
+                            {{form.material_name|f_class:'form-control'}}
+                        </div>
+
+                        <div id="col-md-2_form-0" class="col-md-2">
+                            <label for="">Qtde</label>
+                            {{form.quatity|f_class:'form-control'}}
+                        </div>
+                        <div id="col-md-3_form-0" class="mt-4 col-md-3">
+                            <input type="button" id="id_recyclabelmaterial_set-0-button_remove"
+                                onclick="remove_form('0');"
+                                class="btn btn-danger" value="Remover">
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <label>Qutde (Kg)</label>
-                        {{form.quatity|f_class:'form-control'}}
-                    </div>
-                    <div class="col-md-1 mx-auto">
-                        <p>XXpts</p>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="button" class="btn btn-danger" value="Remover">
-                    </div>
+
                 </div>
                 {% endfor %}
-
-            </div>
-            <div class="card-body">
+                <br>
                 <div class="row">
-                    <input type="button" onclick="add_for();" class="btn btn-outline-success w-50 mx-auto" value="Novo Material">
+                    <button type="button" class="btn btn-outline-success w-50 mx-auto" onclick="add_tags();">Adicionar novo</button>
                 </div>
             </div>
         </div>
-    </form-->
-    <form method="POST">
-        <div class="card mx-auto w-75">
-            <div class="card-body">
-                {{ donation_form.description|f_class:'form-control border'}}
-            </div>
-                <div class="mt-5"></div>
-            {{ material_form.management_form }}
-            {% for form in material_form %}
-            <div id="form_add" class="p-3">
-                <div id="row_form-0" class="row">
-                    <div id="col-md-6_form-0" class="col-md-6">
-                        <label for="">Material</label>
-                        {{form.material_name|f_class:'form-control'}}
-                    </div>
-
-                    <div id="col-md-2_form-0" class="col-md-2">
-                        <label for="">Qtde</label>
-                        {{form.quatity|f_class:'form-control'}}
-                    </div>
-                    <div id="col-md-3_form-0" class="mt-4 col-md-3">
-                        <input type="button" id="remove-button" class="btn btn-danger" value="Remover">
-                    </div>
-                </div>
-
-            </div>
-            {% endfor %}
+        <div class="card-body border-0 w-75 mx-auto d-flex justify-content-end p-0 pt-3">
+            <button type="submit" class="btn btn-lg btn-success">Confirmar doação</button>
         </div>
     </form>
     <div class="card-body">
         <div class="row">
-            <button type="button" class="btn btn-outline-success w-50 mx-auto" onclick="add_tags();">Adicionar
-                novo</button>
+            <!--button type="button" class="btn btn-outline-success w-50 mx-auto" onclick="add_tags();">Adicionar
+                novo</button-->
         </div>
     </div>
 </div>
@@ -86,6 +78,7 @@
 
 {% block scripts%}
 <script>
+    // criar formulários
     function add_form() {
         var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
         var new_form_value = parseInt(total_forms.value) - 1;
@@ -93,22 +86,19 @@
         // new fields for material
         var new_label_material_name = document.createElement('Material');
         new_label_material_name.innerHTML = 'Material';
-        var new_input_material_name = document.querySelector('#id_recyclabelmaterial_set-0-material_name').cloneNode(true);
-        new_input_material_name.name = 'recyclabelmaterial_set' + total_forms.value + '-material_name';
-        new_input_material_name.id = 'id_recyclabelmaterial_set' + total_forms + '-material_name';
+        var new_input_material_name = document.querySelector('#id_recyclabelmaterial_set-0-material_name')
+            .cloneNode(true);
+        new_input_material_name.name = 'recyclabelmaterial_set-' + new_form_value + '-material_name';
+        new_input_material_name.id = 'id_recyclabelmaterial_set-' + new_form_value + '-material_name';
+        new_input_material_name.value = ''
 
         var new_label_quantity = document.createElement('Qtde');
         new_label_quantity.innerHTML = 'Qtde';
-        var new_input_quantity = document.querySelector('#id_recyclabelmaterial_set-0-quatity').cloneNode(true);
-        new_input_quantity.name = 'recyclabelmaterial_set' + total_forms.value + '-quatity';
-        new_input_quantity.id = 'id_recyclabelmaterial_set' + total_forms + '-quatity';
-
-        var new_label_remove = document.createElement('INPUT');
-        new_label_remove.innerHTML = 'Remover';
-        new_label_remove.className = 'btn btn-danger';
-        new_label_remove.type = 'button';
-        new_label_remove.value = 'Remover';
-        new_label_remove.id = 'remove-button';
+        var new_input_quantity = document.querySelector('#id_recyclabelmaterial_set-0-quatity')
+            .cloneNode(true);
+        new_input_quantity.name = 'recyclabelmaterial_set-' + new_form_value + '-quatity';
+        new_input_quantity.id = 'id_recyclabelmaterial_set-' + new_form_value + '-quatity';
+        new_input_quantity.value = ''
 
         document.querySelector('#col-md-6_form-' + new_form_value).appendChild(new_label_material_name);
         document.querySelector('#col-md-6_form-' + new_form_value).appendChild(new_input_material_name);
@@ -116,13 +106,24 @@
         document.querySelector('#col-md-2_form-' + new_form_value).appendChild(new_label_quantity);
         document.querySelector('#col-md-2_form-' + new_form_value).appendChild(new_input_quantity);
 
+
+        var new_label_remove = document.createElement('INPUT');
+        new_label_remove.innerHTML = 'Remover';
+        new_label_remove.className = 'btn btn-danger';
+        new_label_remove.type = 'button';
+        new_label_remove.value = 'Remover';
+        new_label_remove.id = 'id_recyclabelmaterial_set-' + new_form_value + '-button_remove';
+
+        new_label_remove.setAttribute("onclick", "remove_form('" + new_form_value + "');")
+
         document.querySelector('#col-md-3_form-' + new_form_value).appendChild(new_label_remove);
         //document.querySelector('#form_add').appendChild(new_input_remove);
 
-        total_forms.value = parseInt(total_forms.value) + 1;
+        //total_forms.value = parseInt(total_forms.value) + 1;
 
     }
 
+    // Criar DIVs
     function add_tags() {
         var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
 
@@ -149,6 +150,43 @@
         total_forms.value = parseInt(total_forms.value) + 1;
 
         this.add_form();
+    }
+
+    function remove_form(id) {
+        var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
+        /*
+        input_0 = document.getElementById('id_recyclabelmaterial_set-'+id+'-material_name');
+        input_0.parentNode.removeChild(input_0);
+
+        input_1 = document.getElementById('id_recyclabelmaterial_set-'+id+'-quatity');
+        input_1.parentNode.removeChild(input_1);
+
+        input_2 = document.getElementById('id_recyclabelmaterial_set-'+id+'-button_remove');
+        input_2.parentNode.removeChild(input_2);
+        */
+        console.log('id_recyclabelmaterial_set-'+id+'-material_name');
+        console.log('id_recyclabelmaterial_set-'+id+'-quatity');
+        console.log('id_recyclabelmaterial_set-'+id+'-button_remove');
+
+        /*
+        div_1 = document.getElementById('col-md-6_form-'+id);
+        div_1.parentNode.removeChild(div_1)
+        
+        div_2 = document.getElementById('col-md-2_form-'+id);
+        div_2.parentNode.removeChild(div_2)
+
+        div_3 = document.getElementById('col-md-3_form-'+id);
+        div_3.parentNode.removeChild(div_3)*/
+
+        div_0 = document.getElementById('row_form-'+id);
+        div_0.parentNode.removeChild(div_0)
+
+        console.log('row_form-'+id);
+        console.log('col-md-6_form-'+id);
+        console.log('col-md-2_form-'+id);
+        console.log('col-md-3_form-'+id);
+
+        //total_forms.value = parseInt(total_forms.value) - 1;
     }
 
 </script>

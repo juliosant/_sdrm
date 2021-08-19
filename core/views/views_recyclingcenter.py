@@ -111,21 +111,30 @@ def search_donor(request):
 
 @login_required(login_url='login_recyclingcenter')
 @user_type(login_url="login_recyclingcenter")
-def register_donation(request):
+def register_donation(request, id):
+
+    print(id, id)
+    donor = Profile.objects.get(id=id)
 
     if request.POST:
-
         post = request.POST.copy()
         post['recyclingCenter_id'] = request.user
+        post['donor_id'] = donor
+        post['confirmed'] = False
+        post['modification_date'] = None
+        post['added_points'] = 0
         request.POST = post
 
+        register_donation_form = RegisterDonationForm(request.POST)
         material_form_factory = inlineformset_factory(Donation, RecyclabelMaterial, form=RegisterMaterialForm)
         register_material_form = material_form_factory(request.POST)
 
-        register_donation_form = RegisterDonationForm(request.POST)
-        
+        print(register_donation_form.is_valid(), register_material_form.is_valid())
         if register_donation_form.is_valid() and register_material_form.is_valid():
-            donation = register_donation_form()
+            donation = register_donation_form.save()
+            register_material_form.instance =donation
+            register_material_form.save()
+        return HttpResponse("<h1>Criado</h1>")
 
     register_donation_form = RegisterDonationForm()
     
@@ -133,6 +142,7 @@ def register_donation(request):
     register_material_form = material_form_factory()
     content = {
         'donation_form': register_donation_form,
-        'material_form': register_material_form
+        'material_form': register_material_form,
+        'donor': donor
     }
     return render(request, 'profile/recyclingCenter/donate.html', content)

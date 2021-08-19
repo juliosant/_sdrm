@@ -44,7 +44,7 @@ class Donation(models.Model):
     description = models.TextField(max_length=300, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(null=True, blank=True)
-    confirmed = models.BooleanField()
+    confirmed = models.BooleanField(default=None)
     added_points = models.PositiveIntegerField(default=0)
 
 
