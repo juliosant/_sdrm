@@ -3,29 +3,44 @@
 {% load bootstrap %}
 {% load filters %}
 
-{% block title %}.:Página de usuário{% endblock %}
+{% block title %}.:Doação{% endblock %}
 
 {% block content %}
+<style>
+    #shadow{
+        box-shadow: 1px 1px 8px rgb(183, 204, 183);
+    }
+</style>
 
 <div class="col-md-10  ps-5 pe-5">
     <h1 class="text-end">Registrar Doação</h1>
     <hr>
+
     <form method="POST">
         {% csrf_token %}
-        <div class="card mx-auto w-75">
+        <div id="shadow" class="card w-75 mx-auto text-secondary">
             <div class="card-body row border m-3">
                 <h1 class="mb-4">Dados do doador</h1>
                 <div class="col-md-6">
+                    <label class="h5">Código ID:</label>
+                    {{ donor.id }}
+                </div>
+                <div class="col-md-6">
                     <label class="h5">Doador:</label>
-                    {{donor.first_name}} {{donor.last_name}}
+                    {{donor.first_name }} {{donor.last_name }}
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="h5">Telefone:</label>
+                    {% if donor.phone == '' %}
+                        00 00000-0000
+                    {{else}}
+                        {{donor.phone }}
+                    {% endif %}
                 </div>
                 <div class="col-md-6">
                     <label class="h5">Email:</label>
-                    {{ donor.email}}
-                </div>
-                <div class="col-md-6">
-                    <label class="h5">Telefone</label>
-                    {{donor.phone}}
+                    {{ donor.email }}
                 </div>
             </div>
 
@@ -62,7 +77,10 @@
             </div>
         </div>
         <div class="card-body border-0 w-75 mx-auto d-flex justify-content-end p-0 pt-3">
-            <button type="submit" class="btn btn-lg btn-success">Confirmar doação</button>
+            
+            <a href="{% url 'search_donor' %}" class="btn btn-lg btn-outline-danger me-3">Cancelar</a>
+            <button type="submit" class="btn btn-lg btn-success">Confirmar</button>
+        
         </div>
     </form>
     <div class="card-body">
@@ -78,7 +96,7 @@
 
 {% block scripts%}
 <script>
-    // criar formulários
+    // Criar Forms
     function add_form() {
         var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
         var new_form_value = parseInt(total_forms.value) - 1;
@@ -152,6 +170,7 @@
         this.add_form();
     }
 
+    // Remover Forms
     function remove_form(id) {
         var total_forms = document.querySelector('#id_recyclabelmaterial_set-TOTAL_FORMS');
         /*

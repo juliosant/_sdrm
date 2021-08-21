@@ -3,17 +3,21 @@
 {% load bootstrap %}
 {% load filters %}
 
-{% block title %}.:Página de usuário{% endblock %}
+{% block title %}.:Doação{% endblock %}
 
 {% block content %}
+<style>
+    #shadow{
+        box-shadow: 1px 1px 8px rgb(183, 204, 183);
+    }
+</style>
 
 <div class="col-md-10  ps-5 pe-5">
-    
     <h1 class="text-end">Buscar Doador</h1>
     <hr>
     <form method="POST">
         {% csrf_token %}
-        <div class="card w-75 mx-auto">
+        <div id="shadow" class="card w-75 mx-auto">
             <div class="card-body row">
                 <div class="col-md-9">
                     {{ search_donor_form.search|f_class:'form-control' }}
@@ -36,12 +40,13 @@
         <br>
         <br>
         {% if content_search is not None %}
-        <div class="card w-75 mx-auto mt-5">
+        <div id="shadow" class="card w-75 mx-auto mt-5">
             <div class="card-body row">
                 <div class="col-md-9">
                     {% for donor in content_search %}
-                    <a href="{% url 'register_donation' donor.id %}">
-                        {{ donor.first_name}}
+                    <a class="link-success" style="text-decoration: none;" href="{% url 'register_donation' donor.id %}">
+                        <h3>{{ donor.id }} - {{ donor.first_name }} {{ donor.last_name}}</h2>
+                        <h5>{{ donor.email }}</h5>
                     </a>
                     {% endfor %}
 

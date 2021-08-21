@@ -85,6 +85,15 @@ def search_donor(request):
     
     if request.POST:
         if len(request.POST['search']) >= 3:
+            # Quando id informado tiver 0's à esquerda
+            search_id_str = request.POST.copy()
+            while True:
+                if search_id_str['search'][0] == '0':
+                    search_id_str['search'] = search_id_str['search'].replace(search_id_str['search'][0], '')
+                else:
+                    break
+            request.POST = search_id_str
+            
             try:
                 search_id = request.POST['search']
             except ValueError:
@@ -112,8 +121,6 @@ def search_donor(request):
 @login_required(login_url='login_recyclingcenter')
 @user_type(login_url="login_recyclingcenter")
 def register_donation(request, id):
-
-    print(id, id)
     donor = Profile.objects.get(id=id)
 
     if request.POST:

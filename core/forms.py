@@ -55,4 +55,4 @@ class RegisterMaterialForm(forms.ModelForm):
 
 
 class SearchDonorForm(forms.Form):
-    search = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Adicione ID do doador'}))
+    search = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Digite ID, nome ou sobrenome de alguém...'}))
