@@ -1,6 +1,5 @@
 from django import forms
-from django.forms import widgets
-from .models import Donation, Donnor, Place, Profile, RecyclabelMaterial, RecyclingCenter
+from .models import Attending, Donation, Donnor, Place, Profile, RecyclabelMaterial, RecyclingCenter
 from django.contrib.auth.forms import UserCreationForm
 
 class LoginForm(forms.Form):
@@ -12,6 +11,7 @@ class RegisterDonorForm(UserCreationForm):
     first_name = forms.CharField(label="Nome")
     last_name = forms.CharField(label='Sobrenome')
     email = forms.EmailField(label='Email')
+    phone = forms.CharField(label='Telefone')
     profile_type = forms.ChoiceField(choices=Profile.PROFILE_TYPE_CHOICES)
     cpf = forms.CharField(label='CPF', max_length=11)
 
@@ -48,11 +48,27 @@ class RegisterMaterialForm(forms.ModelForm):
     class Meta:
         model = RecyclabelMaterial
         fields = '__all__'
-        #widgets = {
-        #    'material_name': forms.TextInput(attrs={'id': 'material_name'}),
-        #    'quatity': forms.TextInput(attrs={'id': 'quantity'})
-        #}
+        widgets = {
+            'material_name': forms.TextInput(attrs={'required':'',  'pattern':"[A-Za-z0-9]{1,100}"}),
+            'quatity': forms.NumberInput(attrs={'onclick': 'calculator();', 'required':'','pattern':'[^0-9]\d+'}), 
+        }
 
 
 class SearchDonorForm(forms.Form):
     search = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Digite ID, nome ou sobrenome de alguém...'}))
+
+
+class SearchRecyclingCenterForm(forms.Form):
+    search = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Pesquise por um ponto de coleta...'}))
+
+
+class AttendanceForm(forms.ModelForm):
+    #place = forms.CharField(max_length=200)
+    class Meta:
+        model = Attending
+        fields = '__all__'
+        widgets = {
+            'place': forms.TextInput(attrs={'readonly': ''}),
+            
+        }
+        

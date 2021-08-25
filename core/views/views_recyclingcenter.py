@@ -1,12 +1,13 @@
 from django.contrib.auth import login, logout, authenticate
 from django.db.models.query_utils import Q
 from django.forms.models import inlineformset_factory
-from core.models import Donation, Profile, RecyclabelMaterial
+from core.models import Attending, Donation, Profile, RecyclabelMaterial, RecyclingCenter
 from django.http.response import HttpResponse
-from core.forms import LoginForm, RegisterDonationForm, RegisterMaterialForm, RegisterPlaceForm, RegisterRecyclingForm, SearchDonorForm
+from core.forms import AttendanceForm, LoginForm, RegisterDonationForm, RegisterMaterialForm, RegisterPlaceForm, RegisterRecyclingForm, SearchDonorForm
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+import datetime
 
 
 def user_type(login_url=None):
@@ -46,6 +47,7 @@ def register_recyclingCenter(request):
 
 
 def login_recyclingCenter(request):
+    
     if request.POST:
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
@@ -120,29 +122,39 @@ def search_donor(request):
 
 @login_required(login_url='login_recyclingcenter')
 @user_type(login_url="login_recyclingcenter")
-def register_donation(request, id):
-    donor = Profile.objects.get(id=id)
+def register_donation(request, id=None):
+
+    #donor = Profile.objects.get(id=id) <- Versão 1.0
+    # Alterações
+    attending = Attending.objects.get(id=id)
 
     if request.POST:
         post = request.POST.copy()
+        post['attending'] = attending
         post['recyclingCenter_id'] = request.user
-        post['donor_id'] = donor
+        post['donor_id'] = attending.requester
         post['confirmed'] = False
         post['modification_date'] = None
         post['added_points'] = 0
         request.POST = post
 
+        print(request.POST)
         register_donation_form = RegisterDonationForm(request.POST)
         material_form_factory = inlineformset_factory(Donation, RecyclabelMaterial, form=RegisterMaterialForm)
         register_material_form = material_form_factory(request.POST)
 
         print(register_donation_form.is_valid(), register_material_form.is_valid())
         if register_donation_form.is_valid() and register_material_form.is_valid():
+            
+            attending.status_attending = Attending.STATUS_ATTENING_CHOICES[3][0]
+            attending.save(force_update=True)
+            
             donation = register_donation_form.save()
-            register_material_form.instance =donation
+            register_material_form.instance = donation
             register_material_form.save()
-        return HttpResponse("<h1>Criado</h1>")
-
+            
+            return HttpResponse("<h1>Criado</h1>")
+    
     register_donation_form = RegisterDonationForm()
     
     material_form_factory = inlineformset_factory(Donation, RecyclabelMaterial, form=RegisterMaterialForm, extra=1)
@@ -150,6 +162,64 @@ def register_donation(request, id):
     content = {
         'donation_form': register_donation_form,
         'material_form': register_material_form,
-        'donor': donor
+        #'donor': donor <- Versão 1.0
+        # Alterações 
+        'attending': attending
     }
     return render(request, 'profile/recyclingCenter/donate.html', content)
+
+
+def notifications(request):
+    query = Q(
+        Q(recipient=request.user.id)&
+        Q(status_attending__exact='AG')&
+        Q(confirmed=None)
+    )
+    attendings = Attending.objects.filter(query)
+    content = {
+        'attendings': attendings
+    }
+    return render(request, 'profile/recyclingCenter/notifications.html', content)
+
+
+def attending_confirmation(request, id):
+    attending = Attending.objects.get(id=id)
+    attending_form = AttendanceForm(request.POST or None, instance=attending)
+    
+    if request.POST:
+        
+        print(request.POST['confirmed'], type(request.POST['confirmed']))
+
+        if request.POST['confirmed'] == 'true':
+            attending.confirmed = True
+            attending.status_attending = Attending.STATUS_ATTENING_CHOICES[0][0]
+
+        elif request.POST['confirmed'] == 'false':
+            attending.confirmed = False
+            attending.status_attending = Attending.STATUS_ATTENING_CHOICES[2][0]
+        
+
+        attending.save(force_update=True)
+
+        return redirect('notifications')
+
+
+    content = {
+        'attending_form': attending_form,
+        'attending': attending
+    }
+    return render(request, 'profile/recyclingCenter/attending_confirmation.html', content)
+
+def schedule(request):
+
+    query = Q(
+        Q(recipient=request.user.id)&
+        Q(status_attending__exact='CA')&
+        Q(confirmed=True)
+    )
+    attendings = Attending.objects.filter(query).order_by('-id')
+    content = {
+        'attendings': attendings
+    }
+
+    return render(request, 'profile/recyclingCenter/scheduled.html', content)

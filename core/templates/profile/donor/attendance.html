@@ -1,0 +1,74 @@
+{% extends 'profile/donor/base/base_logged.html' %}
+
+{% load filters %}
+
+{% block title %}.:Página de usuário{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10 ps-5 pe-5 mb-3">
+    <h1 class="text-end">Atendimento</h1>
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <div id="shadow" class="card w-75 mx-auto shadow text-secondary">
+            <div class="card-body border m-3 row">
+
+                <div class="col-md-12">
+                    <h2 class="">Dados do Ponto</h2>
+                    <hr class="bg-secondary">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="h5">Código ID:</label>
+                    {{ rc.id }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="h5">Nome do local:</label>
+                    {{ rc.first_name }}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="h5">Telefone:</label>
+                    {% if rc.phone == '' %}
+                    00 00000-0000
+                    {{else}}
+                    {{ rc.phone }}
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="h5">Email:</label>
+                    {{ rc.email }}
+                </div>
+
+            </div>
+
+            <div class="card-body row border m-3">
+                <div class="col-md-12">
+                    <h2>Dados de atendimento</h2>
+                    <hr class="bg-secondary">
+                    <label>Local:</label>
+                    {{ attendance.place|f_class:'form-control' }}
+                    {{ attendance.place.errors }}
+
+                    <label>Horário:</label>
+                    {{ attendance.date_attending|f_class:'form-control' }}
+                    {{ attendance.date_attending.errors }}
+
+                    <label class="mt-5">Comentário:</label>
+                    {{ attendance.obs|f_class:'form-control'}}
+                    {{ attendance.obs.errors }}
+                </div>
+            </div>
+        </div>
+        <div class="card-body border-0 w-75 mx-auto d-flex justify-content-end p-0 pt-3 ">
+            <a href="{% url 'search_rc' %}" class="btn btn-lg btn-outline-danger me-3">Cancelar</a>
+            <button type="submit" class="btn btn-lg btn-success">Confirmar</button>
+        </div>
+    </form>
+</div>
+
+</div>
+{% endblock %}

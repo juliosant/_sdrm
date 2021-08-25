@@ -1,0 +1,79 @@
+{% extends 'profile/recyclingCenter/base/base_logged.html' %}
+
+{% load filters %}
+
+{% block title %}.:Página de usuário{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10 ps-5 pe-5 mb-3">
+    <h1 class="text-end">Notificações</h1>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div id="shadow" class="card w-75 mx-auto shadow text-secondary">
+            <div class="card-body row border m-3">
+                <div class="col-md-12">
+                    <h2 class="">Dados do Atendimento</h2>
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Identificação</label>
+                    {{ attending.id }}
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5"></label>
+                    
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Dia agendado</label>
+                    {{ attending.date_attending.date }}
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Horário</label>
+                    {{ attending.date_attending.time }}
+                </div>
+            </div>
+
+            <div class="card-body row border m-3">
+                <div class="col-md-12">
+                    <h2 class="">Dados do doador</h2>
+                    <hr>
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Código</label>
+                    {{ attending.requester.id }}
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Doador</label>
+                    {{attending.requester.first_name }} {{attending.requester.last_name }}
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Telefone</label>
+                    {{ attending.requester.phone }}
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold h5">Email</label>
+                    {{ attending.requester.email }}
+                </div>
+            </div>
+
+            <div class="card-body row border m-3">
+                <div class="col-md-6 text-center text-danger fw-bold h5 mx-auto ">
+                    <label >Confirmar?:</label>
+                    {{ attending_form.confirmed|f_class:'form-control' }}
+                </div>
+            </div>
+
+        </div>
+        <div class="card-body border-0 w-75 mx-auto d-flex justify-content-end p-0 pt-3">
+            <button type="submit" class="btn btn-lg btn-success">Confirmar</button>
+        
+        </div>
+    </form>
+
+</div>
+
+</div>
+{% endblock %}
